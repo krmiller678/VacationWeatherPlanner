@@ -15,7 +15,7 @@ class CitiesOfInterest
 {
 
 private:
-    std::map<string, City> cities;
+    std::map<std::string, City> cities;
 
 
 public:
