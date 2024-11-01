@@ -21,7 +21,7 @@ private:
 
 public:
     // Constructor
-
+    CitiesOfInterest();
     // Destructor
 
     // Mutators (Setters)
