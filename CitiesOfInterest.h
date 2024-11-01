@@ -34,3 +34,15 @@ public:
     // Operator Overloads - NOT USED
 
 };
+
+ city  <  fulldate, temp>
+          1995-01-01  67.3
+          1995-03-12  80.1
+          ...
+          1994-04-12  90.1
+ miami
+
+ 03/12  -   04/12
+
+ 03/12   80.1
+ 03/13  80.4

@@ -143,6 +143,35 @@ public:
 
         return false;
     }
+
+
+    bool weatherCalculate(string city, vector<string> start, vector<string> end)
+    {
+        for(outer = city1.begin(); outer!= city1.end(); outer++)
+            if(outer->first == city)
+                break;
+
+        return false;
+    }
+
+    vector<string> dateExtract(string date) {
+
+        vector<string> datevect;
+        string Month;
+        Month += date[0];
+        Month += date[1];
+        datevect.push_back(Month);
+
+        string Day;
+        Day += date[3];
+        Day += date[4];
+        datevect.push_back(Day);
+
+        return datevect;
+    }
+
+
+
 };
 
 
@@ -186,19 +215,17 @@ int main() {
             cout << "Please try again:" << endl;
             cin >> input;
         }
+
+        string city = input;
+
         cout << "Please enter the start date in the format MM/DD" << endl;
         cin >> input;
         while (w.dateCheck(input) != 1) {
             cout << "Please try again:" << endl;
             cin >> input;
         }
-        cout << "in1" << input.at(0) <<endl;
-        cout << "in2" << input.at(1) <<endl;
-        cout << "in" << input;
-        string startMonth;
-        startMonth.append(input[0], input[1]);
-        string startDay;
-        startDay.append(input[3], input[4]);
+
+        vector<string>startDate = w.dateExtract(input);
 
         cout << "Please enter the end date in the format MM/DD" << endl;
         cin.clear();
@@ -208,13 +235,10 @@ int main() {
             cin.clear();
             cin >> input;
         }
-       // string endMonth = endMonth + input[0] + input[1];
-       // string endDay = endDay + input[0] + input[1];
 
-        cout << startMonth << "/" << startDay ;
-        //<< "-" << endMonth << endDay;
+        vector<string> endDate = w.dateExtract(input);
 
-
+        w.weatherCalculate(city,startDate, endDate);
 
     }
 
