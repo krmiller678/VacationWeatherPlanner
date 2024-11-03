@@ -2,6 +2,7 @@
 #include <map>
 #include <unordered_map>
 #include <fstream>
+#include <iomanip>
 using namespace std;
 
 class Weather
@@ -26,12 +27,6 @@ private:
    multimap <string, string> calendar;
    multimap <string, string>::iterator cal;
 
-    // unordered_map <string, unordered_map <vector<string>, float> > citymap;
-     //unordered_map <string, unordered_map <vector<string>, float> > ::iterator outer;
-   // unordered_map <string, unordered_map <string, float> >::iterator outer;
-     // unordered_map <vector<string>, float>::iterator inner;
-
-    vector <string> results;
 
 public:
 
@@ -138,9 +133,6 @@ public:
     return inputVect2;
     }
 
-    void cityMapMaker() {
-
-    }
 
     void mapMaker(vector <string> input)
     {
@@ -199,21 +191,12 @@ public:
             inner = outer->second.begin();
             for(inner = outer->second.begin(); inner!= outer->second.end(); inner++)
            { cout  << outer->first << " " <<  inner->first << " " << inner->second << endl;
-                 //  cout << inner->first.size() << endl;
+
                }
 
       }
     }
 
-    //2020-05-13
-    //  cout << date.substr(5,2) << endl; //month
-    //cout << date.substr(8,2) << endl; //month
-
-    // inner = outer->second.begin();
-    //for(inner = outer->second.begin(); inner!= outer->second.end(); inner++)
-    // { cout  << outer->first << " " <<  inner->first << " " << inner->second << endl;
-    //  cout << inner->first.size() << endl;
-    //}
 
     void nodeMaker()
     {
@@ -238,8 +221,8 @@ public:
                     }
                     if(find != 0)
                     citypoint->DateTemps[cal->first + "/" + cal->second] = total / find;
-                    //else
-                       // citypoint->DateTemps[cal->first + "/" + cal->second] = 0.0;
+                    else
+                       citypoint->DateTemps[cal->first + "/" + cal->second] = 200.0;
                     total = 0;
                     find = 0;
                 }
@@ -247,13 +230,10 @@ public:
         }
     }
 
-
-
     void printCityName()
     {
         for(outer = city1.begin(); outer!= city1.end(); outer++)
             cout  << outer->first << " " <<  endl;
-
     }
 
     void printCityMap()
@@ -293,18 +273,53 @@ public:
         return false;
     }
 
-    bool weatherCalculate(string city, vector<string> start, vector<string> end)
+    float weatherCalculate(string city, vector<string> start, vector<string> end)
     {
-        float sum;
+            string startdate = start.at(0) + "/" + start.at(1);
+            string enddate = end.at(0) + "/" + end.at(1);
+            float total= 0.0;
+            float count = 0.0;
 
-        for(outer = city1.begin(); outer!= city1.end(); outer++)
-            if(outer->first == city)
+            //find city
+        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
+            if(cityMapIt->first->cityName == city)
+            break;
+
+        //FIND startdate
+
+        for(inner = cityMapIt->first->DateTemps.begin();
+            inner!= cityMapIt->first->DateTemps.end(); inner++)
+            if(startdate==inner->first)
                 break;
 
-        for(inner = outer->second.begin(); inner!=  outer->second.end(); inner++)
-            cout << "hello";
+            while(1==1)
+            {
+                if(inner->second != 200 && inner->first!=enddate)
+                {
+                  //  cout << inner->first << endl;
+                  //  cout << inner->second << endl;
+                    total += inner->second;
+                    count += 1.0;
+                }
 
-        return false;
+                if(inner->first == "12/31")
+                    inner = cityMapIt->first->DateTemps.begin();
+                    else
+                        inner++;
+
+                if(inner->first==enddate)
+                {
+                    //cout << inner->first << endl;
+                    //cout << inner->second << endl;
+                    if(inner->second != 200)
+                    {
+                        total += inner->second;
+                        count += 1.0;
+                    }
+                    break;
+                }
+            }
+            return total/count;
     }
 
     vector<string> dateExtract(string date) {
@@ -395,18 +410,36 @@ int main() {
 
         vector<string> endDate = w.dateExtract(input);
 
-        w.weatherCalculate(city,startDate, endDate);
+        cout << "Enter c for celsius or f for farenheiht" << endl;
 
+        cin>>input;
+
+        while (input != "c" && input != "f") {
+            cout << "Please try again:" << endl;
+            cin.clear();
+            cin >> input;
+        }
+
+        float weather = w.weatherCalculate(city,startDate, endDate);
+        char unit = 'c';
+        if(input == "f")
+        {weather = (weather * 1.8) + 32.0;
+            unit = 'f';}
+
+        float value = (weather * 100 + 0.5)/100;
+        string val = to_string(value);
+
+        if(val.find(".")==3)
+            val = val.substr(0,5);
+        else  val = val.substr(0,4);
+
+        cout << "Average Weather for " << city << " from "
+        << startDate.at(0) << "/" << startDate.at(1) << " to "
+                << endDate.at(0) << "/" << endDate.at(1) << " is " <<
+                                                                 val <<
+      " degrees " << unit;
     }
 
-  //  cout << "There is somewhere I want to go (type 1 and press enter): "<< endl;
-   // cout << "I want to go somewhere with a certain weather (type 2 and press enter): "<< endl;
-    //while(input!= "1" && input != "2")
-   // {
-    //    cin >> input;
-     //   if(input!= "1" && input != "2")
-     //       cout << "Please type 1 or 2 and press enter" << endl;
-    //}
 
 
     return 0;
