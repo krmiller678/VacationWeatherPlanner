@@ -8,9 +8,23 @@ class Weather
 {
 private:
 
+    struct city{
+        string cityName;
+        map <string, float> DateTemps;
+
+        city(string name)
+        {this->cityName = name;}
+    };
+
+    map <city*, string> cityMap;
+    map <city*, string>::iterator cityMapIt;
+
+    unordered_map <string, map <string, float> > newCity;
    unordered_map <string, map <string, float> > city1;
    unordered_map <string, map <string, float> >::iterator outer;
    map <string, float>::iterator inner;
+   multimap <string, string> calendar;
+   multimap <string, string>::iterator cal;
 
     // unordered_map <string, unordered_map <vector<string>, float> > citymap;
      //unordered_map <string, unordered_map <vector<string>, float> > ::iterator outer;
@@ -20,6 +34,89 @@ private:
     vector <string> results;
 
 public:
+
+    //  The months which have 31 days are January, March, May, July, August, October, and
+    // December. The months which have 30 days are April, June, September, and November.
+
+    void calendarMaker()
+    {
+        string month;
+        string date;
+
+        int j = 1;
+
+        while (j< 13)
+        {
+            if (j == 1 || j == 3 || j == 5 || j == 7 || j == 8 || j == 10 || j == 12)
+            {
+                for (int i = 1; i <= 31; i++)
+                {
+                    if (j < 10)
+                    {
+                        month += "0";
+                        month += to_string(j);
+                    }
+                    else month = to_string(j);
+
+                    if (i < 10)
+                    {
+                        date += "0";
+                        date += to_string(i);
+                    }
+                    else date = to_string(i);
+                    calendar.insert(pair<string, string>(month, date));
+                    month.clear();
+                    date.clear();
+                }
+                j++;
+            }
+
+            if (j == 4 || j == 6 || j == 9 || j == 11)
+            {
+                for (int i = 1; i <= 30; i++)
+                {
+                    if (j < 10)
+                    {
+                        month += "0";
+                        month += to_string(j);
+                    } else month = to_string(j);
+
+                    if (i < 10)
+                    {
+                        date += "0";
+                        date += to_string(i);
+                    }
+                    else date = to_string(i);
+                    calendar.insert(pair<string, string>(month, date));
+                    month.clear();
+                    date.clear();
+                }
+                j++;
+            }
+
+            if(j==2)
+            {
+                for (int i = 1; i <= 28; i++)
+                {
+                    if (i < 10)
+                    {
+                        date += "0";
+                        date += to_string(i);
+                    }
+                    else date = to_string(i);
+
+                    calendar.insert(pair<string, string>("02", date));
+                    date.clear(); month.clear();
+                }
+                j++;
+            }
+        }
+    }
+    void printCalendar()
+    {
+        for(cal = calendar.begin(); cal!= calendar.end(); cal++)
+             cout  << cal->first << "/" <<  cal->second << endl;
+    }
 
     vector <string> inputExtraction()
     {
@@ -41,6 +138,10 @@ public:
     return inputVect2;
     }
 
+    void cityMapMaker() {
+
+    }
+
     void mapMaker(vector <string> input)
     {
         string word;
@@ -50,7 +151,6 @@ public:
 
           for(int i=0; i<input.size();i++)
           {
-             // cout << input.at(i).length() << endl;
                  for(int j = 0; j<input.at(i).length(); j++)
                      {
                      if(input.at(i)[j]==',')
@@ -62,20 +162,16 @@ public:
 
                       word+=input.at(i)[j];
 
-
                  }
 
                  word.erase(word.size() - 1);
                    words.push_back(word);
                               word.clear();
 
-
                   city = words.at(0);
                  if(words.at(1).size()==1)
                      month = "0" + words.at(1);
                  else month = words.at(1);
-
-                 // month= words.at(1);
 
                   if(words.at(2).size()==1)
                      date= "0" + words.at(2);
@@ -109,10 +205,64 @@ public:
       }
     }
 
+    //2020-05-13
+    //  cout << date.substr(5,2) << endl; //month
+    //cout << date.substr(8,2) << endl; //month
+
+    // inner = outer->second.begin();
+    //for(inner = outer->second.begin(); inner!= outer->second.end(); inner++)
+    // { cout  << outer->first << " " <<  inner->first << " " << inner->second << endl;
+    //  cout << inner->first.size() << endl;
+    //}
+
+    void nodeMaker()
+    {
+        float total = 0;
+        float find = 0;
+
+        //go through each city in the raw data
+        for(outer = city1.begin(); outer!= city1.end(); outer++)
+        {
+            city* citypoint = new city(outer->first);
+
+                for(cal = calendar.begin(); cal!= calendar.end(); cal++)
+                {
+                    for(inner = outer->second.begin(); inner != outer->second.end(); inner++)
+                    {
+                        if (cal->first == inner->first.substr(5, 2)
+                            && cal->second == inner->first.substr(8, 2))
+                        {
+                            total += inner->second;
+                            find += 1.0;
+                        }
+                    }
+                    if(find != 0)
+                    citypoint->DateTemps[cal->first + "/" + cal->second] = total / find;
+                    //else
+                       // citypoint->DateTemps[cal->first + "/" + cal->second] = 0.0;
+                    total = 0;
+                    find = 0;
+                }
+            cityMap[citypoint];
+        }
+    }
+
+
+
     void printCityName()
     {
         for(outer = city1.begin(); outer!= city1.end(); outer++)
             cout  << outer->first << " " <<  endl;
+
+    }
+
+    void printCityMap()
+    {
+
+        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
+            for(inner = cityMapIt->first->DateTemps.begin();
+                    inner!= cityMapIt->first->DateTemps.end(); inner++)
+                cout << cityMapIt->first->cityName << " " << inner->first << " " << inner->second << endl;
 
     }
 
@@ -124,7 +274,6 @@ public:
 
         return false;
     }
-
 
     bool dateCheck(string input)
     {
@@ -144,12 +293,16 @@ public:
         return false;
     }
 
-
     bool weatherCalculate(string city, vector<string> start, vector<string> end)
     {
+        float sum;
+
         for(outer = city1.begin(); outer!= city1.end(); outer++)
             if(outer->first == city)
                 break;
+
+        for(inner = outer->second.begin(); inner!=  outer->second.end(); inner++)
+            cout << "hello";
 
         return false;
     }
@@ -181,7 +334,11 @@ int main() {
 
     vector <string> preInput = w.inputExtraction();
     w.mapMaker(preInput);
-  //  w.print();
+    w.calendarMaker();
+    w.nodeMaker();
+    w.printCityMap();
+    //w.printCalendar();
+ //  w.print();
   // for(int i=0; i<preInput.size();i++)
       //  cout << preInput.at(i) << endl;
 
@@ -218,7 +375,7 @@ int main() {
 
         string city = input;
 
-        cout << "Please enter the start date in the format MM/DD" << endl;
+        cout << "Please enter the start date in the format M/D" << endl;
         cin >> input;
         while (w.dateCheck(input) != 1) {
             cout << "Please try again:" << endl;
@@ -227,7 +384,7 @@ int main() {
 
         vector<string>startDate = w.dateExtract(input);
 
-        cout << "Please enter the end date in the format MM/DD" << endl;
+        cout << "Please enter the end date in the format M/D" << endl;
         cin.clear();
         cin >> input;
         while (w.dateCheck(input) != 1) {
