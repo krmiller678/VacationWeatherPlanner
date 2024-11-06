@@ -273,6 +273,43 @@ public:
         return false;
     }
 
+    bool unitcheck(string input)
+    {
+        if(input != "C" && input != "F")
+            return false;
+
+            return true;
+
+    }
+
+    float tempConvert(float weather, string input)
+    {
+        char unit = 'c';
+        if(input == "f")
+        {weather = (weather * 1.8) + 32.0;
+            unit = 'f';}
+
+        float value = (weather * 100 + 0.5)/100;
+        string val = to_string(value);
+
+        if(val.find(".")==3)
+            val = val.substr(0,5);
+        else  val = val.substr(0,4);
+    }
+
+    string outputProcess(float weather)
+    {
+        float value = (weather * 100 + 0.5)/100;
+        string val = to_string(value);
+
+        if(val.find(".")==3)
+            val = val.substr(0,5);
+        else
+            val = val.substr(0,4);
+
+        return val;
+    }
+
     float weatherCalculate(string city, vector<string> start, vector<string> end)
     {
             string startdate = start.at(0) + "/" + start.at(1);
@@ -351,95 +388,112 @@ int main() {
     w.mapMaker(preInput);
     w.calendarMaker();
     w.nodeMaker();
-    w.printCityMap();
+    //w.printCityMap();
     //w.printCalendar();
  //  w.print();
   // for(int i=0; i<preInput.size();i++)
       //  cout << preInput.at(i) << endl;
 
+    string input = "0";
 
     cout << "Welcome to Temp Planner" << endl;
     cout << "Press Enter to Continue" << endl;
-    cin.ignore();
 
-    //cout << "Flushing the output stream." << flush;
-    //system("clear");
+    while(1==1) {
 
-    string input;
+        cin.ignore();
 
-    cout << "Please choose one of the following: "<< endl;
-    cout << "There is somewhere I want to go (type 1 and press enter): "<< endl;
-    cout << "I want to go somehwere with a certain weather (type 2 and press enter): "<< endl;
-    while(input!= "1" && input != "2")
-    {
-        cin >> input;
-        if(input!= "1" && input != "2")
-            cout << "Please type 1 or 2 and press enter" << endl;
-    }
+        //cout << "Flushing the output stream." << flush;
+        //system("clear");
 
-    if(input == "1")
-    {
-        cout << "Please choose one of the following cities: " << endl;
-        w.printCityName();
+        string input;
+
+        cout << "Please choose one of the following: " << endl;
+        cout << "There is somewhere I want to go (type 1 and press enter): " << endl;
+        cout << "I want to visit somehwere with a certain weather (type 2 and press enter): " << endl;
+        cout << "I want to move somehwere with a certain weather (type 3 and press enter): " << endl;
+        cout << "Quit (type 4 and press enter): " << endl;
+
         cin >> input;
 
-        while (w.cityCheck(input) != 1) {
-            cout << "Please try again:" << endl;
-            cin >> input;
+        while (input != "1" && input != "2" && input != "3" && input != "4") {
+                cout << "Please type 1, 2, 3 or 4 and press enter" << endl;
+                cin >> input;
         }
 
-        string city = input;
+        if (input == "4")
+            break;
 
-        cout << "Please enter the start date in the format M/D" << endl;
-        cin >> input;
-        while (w.dateCheck(input) != 1) {
-            cout << "Please try again:" << endl;
+        if (input == "1") {
+            cout << "Please choose one of the following cities: " << endl;
+            w.printCityName();
             cin >> input;
-        }
 
-        vector<string>startDate = w.dateExtract(input);
+            while (w.cityCheck(input) != 1) {
+                cout << "Please try again:" << endl;
+                cin >> input;
+            }
 
-        cout << "Please enter the end date in the format M/D" << endl;
-        cin.clear();
-        cin >> input;
-        while (w.dateCheck(input) != 1) {
-            cout << "Please try again:" << endl;
+            string city = input;
+
+            cout << "Please enter the start date in the format MM/DD" << endl;
+            cin >> input;
+            while (w.dateCheck(input) != 1) {
+                cout << "Please try again:" << endl;
+                cin >> input;
+            }
+
+            vector<string> startDate = w.dateExtract(input);
+
+            cout << "Please enter the end date in the format MM/DD" << endl;
             cin.clear();
             cin >> input;
+            while (w.dateCheck(input) != 1) {
+                cout << "Please try again:" << endl;
+                cin.clear();
+                cin >> input;
+            }
+
+            vector<string> endDate = w.dateExtract(input);
+
+            cout << "Enter C for celsius or F for farenheiht" << endl;
+
+            cin >> input;
+
+            while (w.unitcheck(input) != 1) {
+                cout << "Please try again:" << endl;
+                cin.clear();
+                cin >> input;
+            }
+
+            float weather = w.weatherCalculate(city, startDate, endDate);
+            char unit = 'C';
+            if (input == "F") {
+                weather = (weather * 1.8) + 32.0;
+                unit = 'F';
+            }
+
+            string val = w.outputProcess(weather);
+
+            cout << "The predicted, average temperature in " << city << " for "
+                 << startDate.at(0) << "/" << startDate.at(1) << " to "
+                 << endDate.at(0) << "/" << endDate.at(1) << " is " <<
+                 val << " degrees " << unit << endl << endl;
         }
+        cout << "Return to main menu? (please type y or n and press enter)" << endl;
 
-        vector<string> endDate = w.dateExtract(input);
+        cin >> input;
 
-        cout << "Enter c for celsius or f for farenheiht" << endl;
-
-        cin>>input;
-
-        while (input != "c" && input != "f") {
-            cout << "Please try again:" << endl;
-            cin.clear();
+        while (input != "y" && input != "n") {
+            cout << "Please type y or n and press enter" << endl;
             cin >> input;
         }
 
-        float weather = w.weatherCalculate(city,startDate, endDate);
-        char unit = 'c';
-        if(input == "f")
-        {weather = (weather * 1.8) + 32.0;
-            unit = 'f';}
-
-        float value = (weather * 100 + 0.5)/100;
-        string val = to_string(value);
-
-        if(val.find(".")==3)
-            val = val.substr(0,5);
-        else  val = val.substr(0,4);
-
-        cout << "Average Weather for " << city << " from "
-        << startDate.at(0) << "/" << startDate.at(1) << " to "
-                << endDate.at(0) << "/" << endDate.at(1) << " is " <<
-                                                                 val <<
-      " degrees " << unit;
+        if(input == "n")
+            break;
     }
 
+    cout << endl << "Thank you for using our app! Have a great day!";
 
 
     return 0;
