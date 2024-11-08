@@ -2,7 +2,7 @@
 #include <map>
 #include <unordered_map>
 #include <fstream>
-#include <iomanip>
+#include <chrono>
 using namespace std;
 
 class Weather
@@ -238,14 +238,14 @@ public:
 
     void printCityMap()
     {
-
         for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
             for(inner = cityMapIt->first->DateTemps.begin();
                     inner!= cityMapIt->first->DateTemps.end(); inner++)
                 cout << cityMapIt->first->cityName << " " << inner->first << " " << inner->second << endl;
-
     }
 
+    //Called when the user is asked to input a city name. The inputted city has to match one that's available from the
+    //dataset
     bool cityCheck(string input)
     {
         for(outer = city1.begin(); outer!= city1.end(); outer++)
@@ -266,41 +266,28 @@ public:
         char four = input[3];
         char five = input[4];
 
-        if(isdigit(one) && isdigit(two) && three=='/' && isdigit(four)
-        && isdigit(five))
+        if(isdigit(one) && isdigit(two) && three=='/' && isdigit(four) && isdigit(five))
             return true;
-
         return false;
     }
 
+    //Called to check user input when user is prompted to choose celsius or farenheit as the temperature unit
     bool unitcheck(string input)
     {
         if(input != "C" && input != "F")
             return false;
 
             return true;
-
     }
 
-    float tempConvert(float weather, string input)
+    //Converts temperature to farenheit if needed and then puts the temperature in the final format for display
+    string finalTemp(float weather, string input)
     {
-        char unit = 'c';
-        if(input == "f")
-        {weather = (weather * 1.8) + 32.0;
-            unit = 'f';}
+        if(input == "F")
+            weather = (weather * 1.8) + 32.0;
 
-        float value = (weather * 100 + 0.5)/100;
-        string val = to_string(value);
-
-        if(val.find(".")==3)
-            val = val.substr(0,5);
-        else  val = val.substr(0,4);
-    }
-
-    string outputProcess(float weather)
-    {
-        float value = (weather * 100 + 0.5)/100;
-        string val = to_string(value);
+        weather = (weather * 100 + 0.5)/100;
+        string val = to_string(weather);
 
         if(val.find(".")==3)
             val = val.substr(0,5);
@@ -395,6 +382,7 @@ int main() {
       //  cout << preInput.at(i) << endl;
 
     string input = "0";
+    int timer = 0;
 
     cout << "Welcome to Temp Planner" << endl;
     cout << "Press Enter to Continue" << endl;
@@ -407,22 +395,41 @@ int main() {
         //system("clear");
 
         string input;
+        string input2;
 
         cout << "Please choose one of the following: " << endl;
         cout << "There is somewhere I want to go (type 1 and press enter): " << endl;
-        cout << "I want to visit somehwere with a certain weather (type 2 and press enter): " << endl;
-        cout << "I want to move somehwere with a certain weather (type 3 and press enter): " << endl;
-        cout << "Quit (type 4 and press enter): " << endl;
+        cout << "I want to visit somewhere with a certain weather (type 2 and press enter): " << endl;
+        cout << "I want to move somewhere with a certain weather (type 3 and press enter): " << endl;
+        cout << "Technical specifications mode (type 4 and press enter): " << endl;
+        cout << "Quit (type 5 and press enter): " << endl;
 
         cin >> input;
 
-        while (input != "1" && input != "2" && input != "3" && input != "4") {
-                cout << "Please type 1, 2, 3 or 4 and press enter" << endl;
+        while (input != "1" && input != "2" && input != "3" && input != "4" && input != "5") {
+                cout << "Please type 1, 2, 3, 4 or 5 and press enter" << endl;
                 cin >> input;
         }
 
-        if (input == "4")
+        if (input == "5")
             break;
+
+        if (input == "4")
+        {
+            cout << "Display Timer? (type 1 and press enter)" << endl;
+            cout << "Specify algorithm? (type 2 and press enter)" << endl;
+            cout << "Show dataset? (type 3 and press enter)" << endl;
+
+            cin >> input2;
+
+            while (input2 != "1" && input2 != "2" && input2 != "3") {
+                cout << "Please type 1, 2 or 3 and press enter" << endl;
+                cin >> input2;
+            }
+            if(input2 == "1")
+                timer = 1;
+
+        }
 
         if (input == "1") {
             cout << "Please choose one of the following cities: " << endl;
@@ -466,20 +473,41 @@ int main() {
                 cin >> input;
             }
 
-            float weather = w.weatherCalculate(city, startDate, endDate);
-            char unit = 'C';
-            if (input == "F") {
-                weather = (weather * 1.8) + 32.0;
-                unit = 'F';
-            }
+            string unit = input;
 
-            string val = w.outputProcess(weather);
+            auto start = std::chrono::high_resolution_clock::now();
+
+            float weather = w.weatherCalculate(city, startDate, endDate);
+
+            auto end = std::chrono::high_resolution_clock::now();
+
+            string val = w.finalTemp(weather, unit);
 
             cout << "The predicted, average temperature in " << city << " for "
                  << startDate.at(0) << "/" << startDate.at(1) << " to "
                  << endDate.at(0) << "/" << endDate.at(1) << " is " <<
-                 val << " degrees " << unit << endl << endl;
+                val << " degrees " << unit << endl << endl;
+
+            if(timer==1) {
+                std::chrono::duration<double> elapsed = end - start;
+                cout << "Runtime: " << elapsed.count() << " seconds" << endl << endl;
+            }
         }
+
+
+        if (input == "3")
+        {
+            cout << endl << "Which of the following cities are you thinking of moving to?" << endl;
+
+            w.printCityName();
+            cin >> input;
+
+            while (w.cityCheck(input) != 1) {
+                cout << "Please try again:" << endl;
+                cin >> input;
+            }
+
+    }
         cout << "Return to main menu? (please type y or n and press enter)" << endl;
 
         cin >> input;
@@ -491,6 +519,7 @@ int main() {
 
         if(input == "n")
             break;
+
     }
 
     cout << endl << "Thank you for using our app! Have a great day!";
