@@ -9,7 +9,8 @@ class Weather
 {
 private:
 
-    struct city{
+    struct city
+    {
         string cityName;
         map <string, float> DateTemps;
 
@@ -21,99 +22,35 @@ private:
     map <city*, string>::iterator cityMapIt;
 
     unordered_map <string, map <string, float> > newCity;
-   unordered_map <string, map <string, float> > city1;
-   unordered_map <string, map <string, float> >::iterator outer;
-   map <string, float>::iterator inner;
-   multimap <string, string> calendar;
-   multimap <string, string>::iterator cal;
-
+    unordered_map <string, map <string, float> > city1;
+    unordered_map <string, map <string, float> >::iterator outer;
+    map <string, float>::iterator inner;
+    multimap <string, string> calendar;
+    multimap <string, string>::iterator cal;
 
 public:
 
-    //  The months which have 31 days are January, March, May, July, August, October, and
-    // December. The months which have 30 days are April, June, September, and November.
-
+//Function to create a calendar. Only needs the first country and first year in the dataset to work.
+//Leap years are not being used in this project for simplicity reasons
     void calendarMaker()
     {
-        string month;
-        string date;
+        outer = city1.find("Algiers");
+        inner = outer->second.begin();
 
-        int j = 1;
-
-        while (j< 13)
-        {
-            if (j == 1 || j == 3 || j == 5 || j == 7 || j == 8 || j == 10 || j == 12)
-            {
-                for (int i = 1; i <= 31; i++)
-                {
-                    if (j < 10)
-                    {
-                        month += "0";
-                        month += to_string(j);
-                    }
-                    else month = to_string(j);
-
-                    if (i < 10)
-                    {
-                        date += "0";
-                        date += to_string(i);
-                    }
-                    else date = to_string(i);
-                    calendar.insert(pair<string, string>(month, date));
-                    month.clear();
-                    date.clear();
-                }
-                j++;
-            }
-
-            if (j == 4 || j == 6 || j == 9 || j == 11)
-            {
-                for (int i = 1; i <= 30; i++)
-                {
-                    if (j < 10)
-                    {
-                        month += "0";
-                        month += to_string(j);
-                    } else month = to_string(j);
-
-                    if (i < 10)
-                    {
-                        date += "0";
-                        date += to_string(i);
-                    }
-                    else date = to_string(i);
-                    calendar.insert(pair<string, string>(month, date));
-                    month.clear();
-                    date.clear();
-                }
-                j++;
-            }
-
-            if(j==2)
-            {
-                for (int i = 1; i <= 28; i++)
-                {
-                    if (i < 10)
-                    {
-                        date += "0";
-                        date += to_string(i);
-                    }
-                    else date = to_string(i);
-
-                    calendar.insert(pair<string, string>("02", date));
-                    date.clear(); month.clear();
-                }
-                j++;
-            }
-        }
+            for(inner = outer->second.begin(); inner->first.substr(0,4) == "1995"; inner++)
+            calendar.insert(pair<string, string>(inner->first.substr(5, 2), inner->first.substr(8, 2)));
     }
+
+//Helper function to display the calendar
     void printCalendar()
     {
         for(cal = calendar.begin(); cal!= calendar.end(); cal++)
              cout  << cal->first << "/" <<  cal->second << endl;
     }
 
-    vector <string> inputExtraction()
+//Function devoted to reading in the file. It first puts every line into a vector and then
+//put every delimited element into the next vector
+    vector <string> fileExtraction()
     {
         ifstream f("city_temperature.csv");
 
@@ -124,13 +61,14 @@ public:
          while (getline(f, s))
             inputVect.push_back(s);
 
-    for(int i=0; i<inputVect.size();i++)
-        for(int j = 0; inputVect.at(i)[j]!= '\0'; j++)
-             if(inputVect.at(i)[j]==',' && inputVect.at(i)[j+1]==',')
-                 inputVect2.push_back(inputVect.at(i).substr(j+2));
+        for(int i=0; i<inputVect.size();i++)
+            for(int j = 0; inputVect.at(i)[j]!= '\0'; j++)
+                if(inputVect.at(i)[j]==',' && inputVect.at(i)[j+1]==',')
+                    inputVect2.push_back(inputVect.at(i).substr(j+2));
 
-    f.close();
-    return inputVect2;
+        f.close();
+
+        return inputVect2;
     }
 
 
@@ -139,64 +77,54 @@ public:
         string word;
         string city,month,date,year, fulldate, temp;
         vector <string> words;
-        int count;
 
-          for(int i=0; i<input.size();i++)
-          {
-                 for(int j = 0; j<input.at(i).length(); j++)
-                     {
-                     if(input.at(i)[j]==',')
-                         {
-                              words.push_back(word);
-                              word.clear();
-                              continue;
-                         }
-
+        for(int i=0; i<input.size();i++)
+            {
+            for(int j = 0; j<input.at(i).length(); j++)
+                {
+                  if(input.at(i)[j]==',')
+                    {
+                      words.push_back(word);
+                      word.clear();
+                      continue;
+                    }
                       word+=input.at(i)[j];
 
                  }
-
                  word.erase(word.size() - 1);
-                   words.push_back(word);
-                              word.clear();
+                 words.push_back(word);
+                 word.clear();
+                 city = words.at(0);
 
-                  city = words.at(0);
                  if(words.at(1).size()==1)
                      month = "0" + words.at(1);
                  else month = words.at(1);
 
                   if(words.at(2).size()==1)
                      date= "0" + words.at(2);
-                 else date = words.at(2);
+                  else date = words.at(2);
 
-                      year= words.at(3);
-                      temp= words.at(4);
+                  year= words.at(3);
+                  temp= words.at(4);
+                  words.clear();
 
-                      words.clear();
+                  fulldate += year + "-" + month + "-" + date;
 
-                        fulldate += year + "-" + month + "-" + date;
+                  city1[city][fulldate]=stof(temp);
 
-                        if(temp!="-99")
-                        city1[city][fulldate]=stof(temp);
-
-                        fulldate.clear();
-
+                  fulldate.clear();
           }
     }
 
-        void print()
+    void print()
     {
         for(outer = city1.begin(); outer!= city1.end(); outer++)
-      {
+            {
             inner = outer->second.begin();
             for(inner = outer->second.begin(); inner!= outer->second.end(); inner++)
-           { cout  << outer->first << " " <<  inner->first << " " << inner->second << endl;
-
-               }
-
-      }
+                cout  << outer->first << " " <<  inner->first << " " << inner->second << endl;
+            }
     }
-
 
     void nodeMaker()
     {
@@ -215,14 +143,17 @@ public:
                         if (cal->first == inner->first.substr(5, 2)
                             && cal->second == inner->first.substr(8, 2))
                         {
-                            total += inner->second;
-                            find += 1.0;
+                            if(inner->second != -99)
+                            {
+                                total += inner->second;
+                                find += 1.0;
+                            }
                         }
                     }
                     if(find != 0)
-                    citypoint->DateTemps[cal->first + "/" + cal->second] = total / find;
+                        citypoint->DateTemps[cal->first + "/" + cal->second] = total / find;
                     else
-                       citypoint->DateTemps[cal->first + "/" + cal->second] = 200.0;
+                        citypoint->DateTemps[cal->first + "/" + cal->second] = 200.0; //200 means nothing as calculated
                     total = 0;
                     find = 0;
                 }
@@ -255,6 +186,8 @@ public:
         return false;
     }
 
+//Called when the user is asked to input start and stop dates for their visit. Makes sure the date
+//is in the proper format
     bool dateCheck(string input)
     {
         if(input.length()!=5)
@@ -268,6 +201,7 @@ public:
 
         if(isdigit(one) && isdigit(two) && three=='/' && isdigit(four) && isdigit(five))
             return true;
+
         return false;
     }
 
@@ -278,6 +212,20 @@ public:
             return false;
 
             return true;
+    }
+
+    //Called to check user input when user is prompted to enter a temperature. Temperature must
+    //be between 1 to 3 digits and every character must be a digit
+    bool tempCheck(string input)
+    {
+        if(input.length()<=0 || input.length() > 3)
+            return false;
+
+        for(int i=0; i<input.length();i++)
+            if(!isdigit(input.at(i)))
+                return false;
+
+        return true;
     }
 
     //Converts temperature to farenheit if needed and then puts the temperature in the final format for display
@@ -309,8 +257,7 @@ public:
             if(cityMapIt->first->cityName == city)
             break;
 
-        //FIND startdate
-
+        //find startdate
         for(inner = cityMapIt->first->DateTemps.begin();
             inner!= cityMapIt->first->DateTemps.end(); inner++)
             if(startdate==inner->first)
@@ -320,8 +267,6 @@ public:
             {
                 if(inner->second != 200 && inner->first!=enddate)
                 {
-                  //  cout << inner->first << endl;
-                  //  cout << inner->second << endl;
                     total += inner->second;
                     count += 1.0;
                 }
@@ -346,8 +291,8 @@ public:
             return total/count;
     }
 
-    vector<string> dateExtract(string date) {
-
+    vector<string> dateExtract(string date)
+    {
         vector<string> datevect;
         string Month;
         Month += date[0];
@@ -361,9 +306,6 @@ public:
 
         return datevect;
     }
-
-
-
 };
 
 
@@ -371,13 +313,13 @@ int main() {
 
     Weather w;
 
-    vector <string> preInput = w.inputExtraction();
+    vector <string> preInput = w.fileExtraction();
     w.mapMaker(preInput);
     w.calendarMaker();
     w.nodeMaker();
     //w.printCityMap();
-    //w.printCalendar();
- //  w.print();
+   // w.printCalendar();
+ // w.print();
   // for(int i=0; i<preInput.size();i++)
       //  cout << preInput.at(i) << endl;
 
@@ -428,10 +370,10 @@ int main() {
             }
             if(input2 == "1")
                 timer = 1;
-
         }
 
-        if (input == "1") {
+        if (input == "1")
+        {
             cout << "Please choose one of the following cities: " << endl;
             w.printCityName();
             cin >> input;
@@ -494,18 +436,49 @@ int main() {
             }
         }
 
-
         if (input == "3")
         {
-            cout << endl << "Which of the following cities are you thinking of moving to?" << endl;
+            cout << endl << "Please specify the temperature unit (type C or F and press enter)" << endl;
 
-            w.printCityName();
             cin >> input;
 
-            while (w.cityCheck(input) != 1) {
+            while (w.unitcheck(input) != 1)
+            {
                 cout << "Please try again:" << endl;
+                cin.clear();
                 cin >> input;
             }
+
+            string unit = input;
+
+            cout << endl << "What is the lower end of your ideal, yearly average temperature (enter 1 to 3 digits"
+                            " and press enter" << endl;
+
+            cin >> input;
+
+            while (w.tempCheck(input) != 1)
+            {
+                cout << "Please try again:" << endl;
+                cin.clear();
+                cin >> input;
+            }
+
+            string lower = input;
+
+            cout << endl << "What is the upper end of your ideal, yearly average temperature (enter 1 to 3 digits"
+                            " and press enter" << endl;
+
+            cin >> input;
+
+            while (w.tempCheck(input) != 1)
+            {
+                cout << "Please try again:" << endl;
+                cin.clear();
+                cin >> input;
+            }
+
+            string upper = input;
+
 
     }
         cout << "Return to main menu? (please type y or n and press enter)" << endl;
@@ -519,11 +492,9 @@ int main() {
 
         if(input == "n")
             break;
-
     }
 
     cout << endl << "Thank you for using our app! Have a great day!";
-
 
     return 0;
 }
