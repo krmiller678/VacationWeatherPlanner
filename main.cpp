@@ -175,7 +175,44 @@ public:
                 cout << cityMapIt->first->cityName << " " << inner->first << " " << inner->second << endl;
     }
 
-    //Called when the user is asked to input a city name. The inputted city has to match one that's available from the
+    map <string, float> yearlyAvg(string lower, string upper, string unit)
+    {
+            float low = stof(lower);
+            float high = stof(upper);
+
+            if(unit=="F")
+            {
+                low = (low - 32) / 1.8;
+                high = (high - 32) / 1.8;
+            }
+
+        map <string, float> avgMap;
+        map <string, float>::iterator it;
+
+        float total, count = 0.0;
+        float avg = 0.0;
+
+        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
+        {
+            for (inner = cityMapIt->first->DateTemps.begin(); inner != cityMapIt->first->DateTemps.end(); inner++)
+                if (inner->second != 200)
+                {
+                    total += inner->second;
+                    count += 1.0;
+                }
+
+            if(count != 0.0)
+               avg = total/count;
+
+            if(avg>= low && avg<= high)
+                avgMap[cityMapIt->first->cityName]=avg;
+
+            total = 0.0; count = 0.0; avg = 0.0;
+        }
+        return avgMap;
+    }
+
+    //Called when the user is asked to input a city name. The inputed city has to match one that's available from the
     //dataset
     bool cityCheck(string input)
     {
@@ -307,7 +344,6 @@ public:
         return datevect;
     }
 };
-
 
 int main() {
 
@@ -451,8 +487,8 @@ int main() {
 
             string unit = input;
 
-            cout << endl << "What is the lower end of your ideal, yearly average temperature (enter 1 to 3 digits"
-                            " and press enter" << endl;
+            cout << "What is the lower end of your ideal, yearly average temperature (enter 1 to 3 digits"
+                            " and press enter)" << endl;
 
             cin >> input;
 
@@ -465,8 +501,8 @@ int main() {
 
             string lower = input;
 
-            cout << endl << "What is the upper end of your ideal, yearly average temperature (enter 1 to 3 digits"
-                            " and press enter" << endl;
+            cout << "What is the upper end of your ideal, yearly average temperature (enter 1 to 3 digits"
+                            " and press enter)" << endl;
 
             cin >> input;
 
@@ -479,13 +515,35 @@ int main() {
 
             string upper = input;
 
+            map <string, float> avgMap;
+            map <string, float>::iterator it;
 
+            avgMap = w.yearlyAvg(lower, upper, unit);
+
+            if(avgMap.empty())
+            {
+                cout << "There are no cities with a yearly, average temperature" <<
+                     " within the range you specified. Would " << endl << "you like to " <<
+                     "readjust the range? (press y and enter or press n and enter to continue)" << endl;
+
+                //need input here
+            }
+
+            else
+                cout << "The following cities have a yearly, average temperature in your" <<
+                " specified range:" << endl;
+
+            for(it = avgMap.begin(); it!= avgMap.end(); it++)
+                cout << it->first << " " << w.finalTemp(it->second, unit) << " " << unit << endl;
+
+            cout << endl;
     }
         cout << "Return to main menu? (please type y or n and press enter)" << endl;
 
         cin >> input;
 
-        while (input != "y" && input != "n") {
+        while (input != "y" && input != "n")
+        {
             cout << "Please type y or n and press enter" << endl;
             cin >> input;
         }
