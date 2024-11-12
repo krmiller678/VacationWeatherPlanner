@@ -26,8 +26,12 @@ public:
 
     // Mutators (Setters)
         // City.addNewDataPoint()
+    void addWeatherDataNode(unsigned int monthDay, int temp);
 
     // Accessors (Getters)
+    int getDailyWeather(unsigned int monthDay, unsigned int accessMode) const;
+    int getWeeklyWeather(unsigned int monthDay, unsigned int accessMode) const; // Average across the week
+    vector<int>& getWeeklyWeatherOneCity(unsigned int monthDay, unsigned int accessMode) const; // Per day weather for week
 
     // Additional Functions
 
