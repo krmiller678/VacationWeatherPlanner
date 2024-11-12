@@ -31,7 +31,7 @@ public:
     const vector<pair<string, int>>& getEveryCityDate(unsigned int monthDay, unsigned int accessMode) const; // returns a vector of every cityName, temp
     const vector<pair<string, int>>& getEveryCityWeek(unsigned int monthDay, unsigned int accessMode) const; // returns a vector of every cityName, avg temp for week
     const int getOneCityDate(string cityName, unsigned int monthDay, unsigned int accessMode); // returns temperature for the city on that day
-    const vector<int> getOneCityWeek(string cityName, unsigned int monthDay, unsigned int accessMode); // returns a vector of temps for week starting with monthDay
+    const vector<int>& getOneCityWeek(string cityName, unsigned int monthDay, unsigned int accessMode); // returns a vector of temps for week starting with monthDay
 
     // Additional Functions
 
