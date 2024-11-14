@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <chrono>
+#include <vector>
 using namespace std;
 
 class Weather

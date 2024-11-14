@@ -17,6 +17,7 @@ private:
 
 public:
     // Constructor
+    WeatherDataNode();
 
     // Destructor
 
@@ -27,5 +28,6 @@ public:
     // Additional Functions
 
     // Operator Overloads - YES
-    
+
+
 };

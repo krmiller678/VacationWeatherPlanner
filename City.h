@@ -4,6 +4,8 @@
 #include <string>
 #include "WeatherDataNode.h"
 
+using namespace std;
+
 /*
 The City class contains all the data from the CSV after it has been sorted by City.
 
@@ -21,8 +23,10 @@ private:
 
 public:
     // Constructor
+    City();
 
     // Destructor
+    ~City();
 
     // Mutators (Setters)
         // City.addNewDataPoint()
