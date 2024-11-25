@@ -1,5 +1,6 @@
 #pragma once
-
+#include <string>
+using namespace std;
 /*
 The WeatherDataNode class (could be a struct) is really here to define operator overloading so that we have a way to organize
 our data in our ADT. We need to be able to compare the date.
@@ -9,14 +10,17 @@ some kind of temperature averaging function to the WeatherDataNode to average th
 
 Should be a super simple class
 */
-class WeatherDataNode
-{
-private:
-    unsigned int _date = 0;
-    int temperature = 0;
 
+
+
+class WeatherDataNode {
 public:
-    // Constructor
+    WeatherDataNode(const string& date, int temp);
+
+    // Function to get the temperature
+    int getTemperature() const;
+
+
 
     // Destructor
 
@@ -27,5 +31,16 @@ public:
     // Additional Functions
 
     // Operator Overloads - YES
-    
+
+private:
+    string date;
+    int temperature;
 };
+
+// commented out in case we want to use int instead
+// private:
+//     unsigned int _date = 0;
+//     int temperature = 0;
+
+
+
