@@ -56,21 +56,26 @@ public:
 //into another next vector
     vector <string> fileExtraction()
     {
-        ifstream f("city_temperature.csv");
-
         string s;
         vector <string> inputVect;
         vector <string> inputVect2;
 
+        ifstream f("city_temperature1.csv");
+
         while (getline(f, s))
+            inputVect.push_back(s);
+
+        f.close();
+
+        ifstream x("city_temperature2.csv");
+
+        while (getline(x, s))
             inputVect.push_back(s);
 
         for(int i=0; i<inputVect.size();i++)
             for(int j = 0; inputVect.at(i)[j]!= '\0'; j++)
                 if(inputVect.at(i)[j]==',' && inputVect.at(i)[j+1]==',')
                     inputVect2.push_back(inputVect.at(i).substr(j+2));
-
-        f.close();
 
         return inputVect2;
     }
