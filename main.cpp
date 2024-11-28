@@ -6,18 +6,18 @@
 #include <string>
 using namespace std;
 
-class Weather
+class Temperature
 {
 private:
 
 //City struct represent a city and has 2 maps to store the average, daily temperature for every day of the year. Accessing
-//these different maps is what will be compared for the 2 different data structures
+//these different maps is what will be compared for the 2 different data structures 
     struct city
     {
         string cityName;
         map <string, float> DateTemps;
         unordered_map <string, pair<string,float> > DateTemps2;
-
+        
         city(string name)
         {this->cityName = name;}
     };
@@ -27,7 +27,7 @@ private:
 
     map <city*, string> cityMap;
     map <city*, string>::iterator cityMapIt;
-
+    
     map <string, map <string, float> > city1;
     map <string, map <string, float> >::iterator outer;
     map <string, float>::iterator inner;
@@ -113,9 +113,12 @@ public:
             temp= words.at(4);
             words.clear();
 
-            fulldate += year + "-" + month + "-" + date;
-
-            city1[city][fulldate]=stof(temp);
+            if(year.length()==4 && city != "Muscat")
+                //some rows in CSV had 3 digits for year. Muscat had negligible temperature data
+            {
+                fulldate += year + "-" + month + "-" + date;
+                city1[city][fulldate] = stof(temp);
+            }
 
             fulldate.clear();
         }
@@ -138,11 +141,10 @@ public:
             {
                 for(inner = outer->second.begin(); inner != outer->second.end(); inner++)
                 {
-                    if (cal->first == inner->first.substr(5, 2)
-                        && cal->second == inner->first.substr(8, 2))
+                    if(cal->first == inner->first.substr(5, 2) && cal->second == inner->first.substr(8, 2))
                     {
                         if(inner->second != -99)
-                        {
+                        {  // cout << citypoint->cityName << " " << date << " " << inner->first << " " << total << " " << find << " " << endl;
                             total += inner->second;
                             find += 1.0;
                         }
@@ -152,6 +154,7 @@ public:
                 //this part is needed to be able to initialize the unordered map in city struct
 
                 date = cal->first + "/" + cal->second;
+
                 if(date == "12/31")
                     nextdate = "01/01";
                 else
@@ -163,13 +166,13 @@ public:
 
                 if(find != 0)
                 {
-                    citypoint->DateTemps[cal->first + "/" + cal->second] = total / find;
+                    citypoint->DateTemps[cal->first +  "/" + cal->second] = total / find;
                     citypoint->DateTemps2[date]= make_pair(nextdate, total / find);
                 }
                 else
                 {
-                    citypoint->DateTemps[cal->first + "/" + cal->second] = 200.0; //200 means nothing as calculated
-                    citypoint->DateTemps2[date]= make_pair(nextdate, 200.0);
+                    citypoint->DateTemps[cal->first + "/" + cal->second] = 10000.0; //10000 means nothing was calculated
+                    citypoint->DateTemps2[date]= make_pair(nextdate, 10000.0);
                 }
 
                 total = 0;
@@ -180,87 +183,6 @@ public:
     }
 
 //###########################    CALCULATION FUNCTIONS ################################################
-
-//Function used by option 1 that will take in the destination, start and end date of someone's trip. It will then
-//find the city and look up the temperatures between those dates and return the average. This function accesses
-//the ordered map in the city struct
-    float weatherCalculate(string city, vector<string> start, vector<string> end)
-    {
-        string startdate = start.at(0) + "/" + start.at(1);
-        string enddate = end.at(0) + "/" + end.at(1);
-        float total= 0.0;
-        float count = 0.0;
-
-        //find city
-        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
-            if(cityMapIt->first->cityName == city)
-                break;
-
-        //find startdate
-        for(inner = cityMapIt->first->DateTemps.begin();
-            inner!= cityMapIt->first->DateTemps.end(); inner++)
-            if(startdate==inner->first)
-                break;
-
-        while(1==1)
-        {
-            if(inner->second != 200 && inner->first!=enddate)
-            {
-                total += inner->second;
-                count += 1.0;
-            }
-
-            if(inner->first == "12/31")
-                inner = cityMapIt->first->DateTemps.begin();
-            else
-                inner++;
-
-            if(inner->first==enddate)
-            {
-                if(inner->second != 200)
-                {
-                    total += inner->second;
-                    count += 1.0;
-                }
-                break;
-            }
-        }
-        return total/count;
-    }
-
-//This function does the same thing as weatherCalculate except it accesses the unordered map of daily temperatures in the
-//city struct
-    float weatherCalculate2(string city, vector<string> start, vector<string> end)
-    {
-        string startdate = start.at(0) + "/" + start.at(1);
-        string enddate = end.at(0) + "/" + end.at(1);
-
-        float total= 0.0;
-        float count = 0.0;
-
-        //find city
-        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
-            if(cityMapIt->first->cityName == city)
-                break;
-
-        //find startdate
-        it2 = cityMapIt->first->DateTemps2.find(startdate);
-
-        while(1==1) {
-            if (it2->second.second != 200)
-            {
-                total += it2->second.second;
-                count += 1.0;
-            }
-
-            if (it2->first == enddate)
-                break;
-
-            it2 = cityMapIt->first->DateTemps2.find(it2->second.first);
-        }
-
-        return total/count;
-    }
 
 //Function needed when user decides to use celsius. The dataset is in farenheit so the user's input has to be covnerted
     vector<float> lowerUpper(string lower, string upper, string unit)
@@ -280,6 +202,177 @@ public:
         return lowHigh;
     }
 
+//Function used by option 1 that will take in the destination, start and end date of someone's trip. It will then
+//find the city and look up the temperatures between those dates and return the average. This function accesses
+//the ordered map in the city struct
+    float weatherCalculate(string city, vector<string> start, vector<string> end)
+    {
+        string startdate = start.at(0) + "/" + start.at(1);
+        string enddate = end.at(0) + "/" + end.at(1);
+        float total= 0.0;
+        float count = 0.0;
+
+        //find city
+        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
+            if(cityMapIt->first->cityName == city)
+                break;
+
+        //find startdate
+        for(inner = cityMapIt->first->DateTemps.begin();inner!= cityMapIt->first->DateTemps.end(); inner++)
+            if(startdate==inner->first)
+                break;
+
+        if(startdate == enddate)
+            return inner->second;
+
+        while(1==1)
+        {
+            if(inner->second != 10000 && inner->first!=enddate)
+            {
+                total += inner->second;
+                count += 1.0;
+            }
+
+            if(inner->first == "12/31")
+                inner = cityMapIt->first->DateTemps.begin();
+            else
+                inner++;
+
+            if(inner->first==enddate)
+            {
+                if(inner->second != 10000)
+                {
+                    total += inner->second;
+                    count += 1.0;
+                }
+                break;
+            }
+        }
+        if(count!=0)
+        return total/count;
+        else
+            return 10000;
+    }
+
+//This function does the same thing as weatherCalculate except it accesses the unordered map of daily temperatures in the
+//city struct
+    float weatherCalculate2(string city, vector<string> start, vector<string> end)
+    {
+        string startdate = start.at(0) + "/" + start.at(1);
+        string enddate = end.at(0) + "/" + end.at(1);
+
+        float total= 0.0;
+        float count = 0.0;
+
+        //find city
+        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
+            if(cityMapIt->first->cityName == city)
+                break;
+
+        it2 = cityMapIt->first->DateTemps2.find(startdate);
+
+        if(startdate == enddate)
+            return it2->second.second;
+
+        while(1==1) {
+            if (it2->second.second != 10000)
+            {
+                total += it2->second.second;
+                count += 1.0;
+            }
+
+            if (it2->first == enddate)
+                break;
+
+            it2 = cityMapIt->first->DateTemps2.find(it2->second.first);
+        }
+
+        if(count!=0)
+            return total/count;
+        else
+            return 10000;
+
+    }
+
+//Funciton used by option2. It iterates through ever city in the cityMap then every calendear date in the ordered
+//DateTemps map. If the temperature of a date is between what the user specified, that becomes the start date.
+//Once a temperature is outside of the range, the previous date is the end date. It goes through the year making these
+//date ranges for each city.
+    map <string, map<string, string> > dateRanges(string lower, string upper, string unit)
+    {
+        map <string, map<string, string> > rangesMap;
+
+        string startDate = "0";
+        string stopDate = "0";
+
+        vector<float> lowHigh = lowerUpper(lower, upper, unit);
+        float low = lowHigh.at(0);
+        float high = lowHigh.at(1);
+
+        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
+        {
+            for (inner = cityMapIt->first->DateTemps.begin(); inner != cityMapIt->first->DateTemps.end(); inner++)
+            {
+                if (inner->second >= low && inner->second <= high && startDate == "0" && inner->second!= 10000)
+                     startDate = inner->first;
+
+                if ((inner->second < low || inner->second > high || inner->first == "12/31") && startDate != "0"
+                && stopDate == "0"  && inner->second !=10000)
+                {
+                    stopDate = inner->first;
+                    rangesMap[cityMapIt->first->cityName][startDate]=stopDate;
+                    startDate = "0"; stopDate = "0";
+                }
+
+            }
+    }
+        return rangesMap;
+    }
+
+ //Similar to dateRanges function except it uses the unordered DateTemps2 map
+    map <string, map<string, string> > dateRanges2(string lower, string upper, string unit)
+    {
+        map <string, map<string, string> > rangesMap;
+        unordered_map <string, pair<string,float> >::iterator tempIt;
+
+        string startDate = "0";
+        string stopDate = "0";
+
+        vector<float> lowHigh = lowerUpper(lower, upper, unit);
+        float low = lowHigh.at(0);
+        float high = lowHigh.at(1);
+
+            for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
+        {
+            it2 = cityMapIt->first->DateTemps2.find("01/01");
+
+            while(1==1)
+            {
+                if (it2->second.second >= low && it2->second.second <= high && startDate == "0" && it2->second.second != 10000)
+                    startDate = it2->first;
+
+                tempIt = cityMapIt->first->DateTemps2.find(it2->second.first);
+
+                if ((tempIt->second.second < low || tempIt->second.second > high ||
+                     tempIt->first == "12/31") && startDate != "0" && stopDate == "0"
+                    && tempIt->second.second !=10000)
+                {
+                    stopDate = it2->first;
+                    rangesMap[cityMapIt->first->cityName][startDate]=stopDate;
+                    startDate = "0"; stopDate = "0";
+                }
+
+                if(it2->first == "12/31")
+                    break;
+
+                it2 = cityMapIt->first->DateTemps2.find(tempIt->second.first);
+
+            }
+        }
+
+       return rangesMap;
+    }
+
 //Function used by option3 goes through ever city in CityMap and every calendar date in the ordered DateTemps map to
 //calcualte an average temp for the year.
     map <string, float> yearlyAvg(string lower, string upper, string unit)
@@ -296,7 +389,7 @@ public:
         for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
         {
             for (inner = cityMapIt->first->DateTemps.begin(); inner != cityMapIt->first->DateTemps.end(); inner++)
-                if (inner->second != 200)      //Value of 200 meant nothing was calculated
+                if (inner->second != 10000)      //Value of 10000 meant nothing was calculated
                 {
                     total += inner->second;
                     count += 1.0;
@@ -312,6 +405,7 @@ public:
         }
         return avgMap;
     }
+
 //Similar to yearlyAvg except this function uses the onordered DateTemps2 map
     map <string, float> yearlyAvg2(string lower, string upper, string unit)
     {
@@ -328,7 +422,7 @@ public:
         for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
         {
             for (it2 = cityMapIt->first->DateTemps2.begin(); it2 != cityMapIt->first->DateTemps2.end(); it2++)
-                if (it2->second.second != 200)
+                if (it2->second.second != 10000)
                 {
                     total += it2->second.second;
                     count += 1.0;
@@ -343,101 +437,8 @@ public:
             total = 0.0;
             count = 0.0;
             avg = 0.0;
-
         }
         return avgMap;
-    }
-
-//Funciton used by option2. It iterates through ever city in the cityMap then every calendear date in the ordered
-//DateTemps map. If the temperature of a date is between what the user specified, that becomes the start date.
-//Once a temperature is outside of the range, the previous date is the end date. It goes through the year making these
-//date ranges for each city.
-    map <string, map<string, string> > dateRanges(string lower, string upper, string unit)
-    {
-
-        map <string, map<string, string> > rangesMap;
-
-        float low = stof(lower);
-        float high = stof(upper);
-
-        string startDate = "0";
-        string stopDate = "0";
-
-        if(unit=="C")
-        {
-            low = low * 1.8 + 32;
-            high = high * 1.8 + 32;
-        }
-
-        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
-        {
-            for (inner = cityMapIt->first->DateTemps.begin(); inner != cityMapIt->first->DateTemps.end(); inner++)
-            {
-                if (inner->second >= low && inner->second <= high && startDate == "0" && inner->second!= 200)
-                    startDate = inner->first;
-
-                if ((inner->second < low || inner->second > high || inner->first == "12/31") && startDate != "0" && stopDate == "0"
-                    && inner->second !=200)
-                {
-                    inner--;
-                    stopDate = inner->first;
-                    inner++;
-                    rangesMap[cityMapIt->first->cityName][startDate]=stopDate;
-                    startDate = "0"; stopDate = "0";
-                }
-            }
-        }
-        return rangesMap;
-    }
-
-    //Similar to dateRanges function except it uses the unordered DateTemps2 map
-    map <string, map<string, string> > dateRanges2(string lower, string upper, string unit)
-    {
-        map <string, map<string, string> > rangesMap;
-        unordered_map <string, pair<string,float> >::iterator tempIt;
-
-        float low = stof(lower);
-        float high = stof(upper);
-
-        string startDate = "0";
-        string stopDate = "0";
-
-        if(unit=="C")
-        {
-            low = low * 1.8 + 32;
-            high = high * 1.8 + 32;
-        }
-
-        for(cityMapIt = cityMap.begin(); cityMapIt!= cityMap.end(); cityMapIt++)
-        {
-            it2 = cityMapIt->first->DateTemps2.find("01/01");
-
-            while(1==1)
-            {
-                if (it2->second.second >= low && it2->second.second <= high && startDate == "0" && it2->second.second != 200)
-                    startDate = it2->first;
-
-                tempIt = cityMapIt->first->DateTemps2.find(it2->second.first);
-
-                if ((tempIt->second.second < low || tempIt->second.second > high ||
-                     tempIt->first == "12/31") && startDate != "0" && stopDate == "0"
-                    && tempIt->second.second !=200)
-                {
-                    stopDate = it2->first;
-                    rangesMap[cityMapIt->first->cityName][startDate]=stopDate;
-                    startDate = "0"; stopDate = "0";
-                }
-
-                if(it2->first == "12/31")
-                    break;
-
-                //  it2 = cityMapIt->first->DateTemps2.find(it2->second.first);
-                it2 = cityMapIt->first->DateTemps2.find(tempIt->second.first);
-                // it2 = cityMapIt->first->DateTemps2.find(tempIt->second.first);
-            }
-        }
-
-        return rangesMap;
     }
 
 //################################## INPUT VALIDATION FUNCTIONS #################################
@@ -462,7 +463,7 @@ public:
             return false;
 
         if(!isdigit(input[0]) || !isdigit(input[1]) || input[2]!='/' || !isdigit(input[3])
-           || !isdigit(input[4]))
+        || !isdigit(input[4]))
             return false;
 
         string startdate = input.substr(0,2);
@@ -485,15 +486,34 @@ public:
     }
 
 //Called to check user input when user is prompted to enter a temperature. Temperature must
-//be between 1 to 3 digits and every character must be a digit
+//be between 1 to 2 digits and every character must be a digit. Accounts for negative temps
     bool tempCheck(string input)
     {
-        if(input.length()<=0 || input.length() > 3)
+        int start = 0;
+        int length = input.length();
+
+        if(input.at(0)=='-')
+        {
+            length = input.length()-1;
+            start = 1;
+        }
+
+        if(length <= 0 || length > 2)
             return false;
 
-        for(int i=0; i<input.length();i++)
+        for(int i=start; i<input.length();i++)
             if(!isdigit(input.at(i)))
                 return false;
+
+        return true;
+    }
+
+//Called when user has to input a max temp for the temp range in options 1 and 2. If the max is less than the min,
+//they need to try again
+    bool upperCheck(string min, string max)
+    {
+        if(stoi(min) > stoi(max))
+            return false;
 
         return true;
     }
@@ -503,7 +523,7 @@ public:
     {
         if(input == "C")
             weather = (weather - 32) / 1.8;
-        //weather = (weather * 1.8) + 32.0;
+            //weather = (weather * 1.8) + 32.0;
 
         weather = (weather * 100 + 0.5)/100;
         string val = to_string(weather);
@@ -515,6 +535,8 @@ public:
 
         return val;
     }
+
+//################################## Extra FUNCTIONS #################################
 
 //Function needed only by option 1 to get the user input of MM/DD into the proper format for use. Has it's own
 //function since it's called for both the start date and the end date
@@ -539,12 +561,12 @@ public:
     void winner(chrono::duration<double> elapsed, chrono::duration<double> elapsed2)
     {
 
-        cout << "Runtime with ordered map: " << elapsed.count() << " seconds" << endl;
-        cout << "Runtime with unordered map: " << elapsed2.count() << " seconds" << endl;
-        if(elapsed.count() < elapsed2.count())
-            cout << "Ordered map wins!" << endl;
-        else
-            cout << "Unordered map wins!" << endl << endl;
+            cout << endl << "Runtime with ordered map: " << elapsed.count() << " seconds" << endl;
+            cout << "Runtime with unordered map: " << elapsed2.count() << " seconds" << endl;
+            if(elapsed.count() < elapsed2.count())
+                cout << "Ordered map wins!" << endl;
+            else
+                cout << "Unordered map wins!"  << endl;
     }
 
 //################################ OPTION FUNCTIONS ###############################################
@@ -574,7 +596,8 @@ public:
 
         cout << endl << "Please enter the start date in the format MM/DD" << endl;
         cin >> input;
-        while (dateCheck(input) != 1) {
+        while (dateCheck(input) != 1)
+        {
             cout << "Please try again:" << endl;
             cin >> input;
         }
@@ -602,31 +625,67 @@ public:
             cin.clear();
             cin >> input;
         }
+
         string unit = input;
+        float weather;
+        chrono::duration<double> elapsed, elapsed2;
 
-        auto start = std::chrono::high_resolution_clock::now();
-        float weather = weatherCalculate(city, startDate, endDate);
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-
-        start = std::chrono::high_resolution_clock::now();
-        weatherCalculate2(city, startDate, endDate);
-        end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed2 = end - start;
-
-        string val = finalTemp(weather, unit);
-
-        cout << endl << "The predicted, average temperature in " << city ;
-        if(startDate!= endDate)
-            cout << " for " << startDate.at(0) << "/" << startDate.at(1) << " to "
-                 << endDate.at(0) << "/" << endDate.at(1);
-        else
-            cout << " on " << startDate.at(0) << "/" << startDate.at(1);
-
-        cout  << " is " << val << " degrees " << unit << endl << endl;
+        if(timer==0)
+            weather = weatherCalculate(city, startDate, endDate);
 
         if(timer==1)
-            winner(elapsed, elapsed2);
+        {
+            auto start = std::chrono::high_resolution_clock::now();
+            weather = weatherCalculate(city, startDate, endDate);
+            auto end = std::chrono::high_resolution_clock::now();
+            elapsed = end - start;
+
+            start = std::chrono::high_resolution_clock::now();
+            weatherCalculate2(city, startDate, endDate);
+            end = std::chrono::high_resolution_clock::now();
+            elapsed2 = end - start;
+        }
+
+        if(weather == 10000.0)
+        {
+            cout << endl << "Unforunately there isn't historical data available to be able to calculate the " <<
+            "predicted average temperature for ";
+            if(startDate == endDate)
+                cout << "this date" << endl;
+            else
+                cout << "this date range" << endl;
+
+                cout << "Would you like to try again? (press y and enter or n and enter)" << endl;
+
+            cin >> input;
+
+            while (input != "y" && input != "n")
+            {
+                cout << "Please type y or n and press enter" << endl;
+                cin >> input;
+            }
+
+            if(input == "y")
+                option1();
+
+            return;
+
+        }
+
+            string val = finalTemp(weather, unit);
+
+            cout << endl << "The predicted, average temperature in " << city;
+            if (startDate != endDate)
+                cout << " for " << startDate.at(0) << "/" << startDate.at(1) << " to "
+                     << endDate.at(0) << "/" << endDate.at(1);
+            else
+                cout << " on " << startDate.at(0) << "/" << startDate.at(1);
+
+            cout << " is " << val << " degrees " << unit << endl;
+
+
+       if(timer==1)
+           winner(elapsed, elapsed2);
 
     }
 
@@ -636,41 +695,42 @@ public:
     void option2()
     {
         string input;
+
         cout << endl << "Please specify the temperature unit (type C or F and press enter)" << endl;
 
         cin >> input;
 
         while (unitcheck(input) != 1)
         {
-            cout << "Please try again:" << endl;
+            cout << endl << "Please try again:" << endl;
             cin.clear();
             cin >> input;
         }
 
         string unit = input;
 
-        cout << "What is the lower end of your ideal, average temperature (enter 1 to 3 digits"
+        cout << endl << "What is the lower end of your ideal, average temperature (enter 1 to 2 digits"
                 " and press enter)" << endl;
 
         cin >> input;
 
         while (tempCheck(input) != 1)
         {
-            cout << "Please try again:" << endl;
+            cout << endl << "Please try again:" << endl;
             cin.clear();
             cin >> input;
         }
 
         string lower = input;
 
-        cout << "What is the upper end of your ideal, average temperature (enter 1 to 3 digits"
+        cout << endl << "What is the upper end of your ideal, average temperature (enter 1 to 2 digits"
                 " and press enter)" << endl;
 
         cin >> input;
 
-        while (tempCheck(input) != 1)
+        while (tempCheck(input) != 1 || upperCheck(lower, input) != 1)
         {
-            cout << "Please try again:" << endl;
+            cout << endl << "Please try again:" << endl;
             cin.clear();
             cin >> input;
         }
@@ -681,7 +741,7 @@ public:
         map <string, map<string, string> > ::iterator rangeOuter;
         map<string, string> ::iterator rangeInner;
 
-        std::chrono::duration<double> elapsed, elapsed2;
+        chrono::duration<double> elapsed, elapsed2;
 
         if(timer==0)
             rangesMap = dateRanges(lower, upper, unit);
@@ -701,9 +761,9 @@ public:
 
         if(rangesMap.empty())
         {
-            cout << "There are no cities with temperatures between your desired range at any point" <<
+            cout << endl << "There are no cities with temperatures between your desired range at any point" <<
                  " during the year. Would you like to readjust the range? (press y and enter to try " <<
-                 "again or press n and enter to continue)" << endl << endl;
+                  "again or press n and enter to continue)" << endl << endl;
 
             cin >> input;
 
@@ -716,8 +776,8 @@ public:
             if(input == "y")
                 option2();
         }
-        else {
-
+        else
+        {
             for (rangeOuter = rangesMap.begin(); rangeOuter != rangesMap.end(); rangeOuter++) {
                 cout << rangeOuter->first << ": ";
                 for (rangeInner = rangeOuter->second.begin(); rangeInner != rangeOuter->second.end(); rangeInner++)
@@ -740,41 +800,41 @@ public:
 //The actual calculations occur when it calls the yearlyAvg function.
     void option3()
     {
-        string input;
-        cout << endl << "Please specify the temperature unit (type C or F and press enter)" << endl;
+            string input;
+            cout << endl << "Please specify the temperature unit (type C or F and press enter)" << endl;
 
-        cin >> input;
-
-        while (unitcheck(input) != 1) {
-            cout << "Please try again:" << endl;
-            cin.clear();
             cin >> input;
-        }
+
+            while (unitcheck(input) != 1) {
+                cout << endl << "Please try again:" << endl;
+                cin.clear();
+                cin >> input;
+            }
 
         string unit = input;
 
-        cout << "What is the lower end of your ideal, yearly average temperature (enter 1 to 3 digits"
+        cout << endl << "What is the lower end of your ideal, yearly average temperature (enter 1 to 2 digits"
                 " and press enter)" << endl;
 
         cin >> input;
 
         while (tempCheck(input) != 1)
         {
-            cout << "Please try again:" << endl;
+            cout << endl << "Please try again:" << endl;
             cin.clear();
             cin >> input;
         }
 
         string lower = input;
 
-        cout << "What is the upper end of your ideal, yearly average temperature (enter 1 to 3 digits"
+        cout << endl << "What is the upper end of your ideal, yearly average temperature (enter 1 to 2 digits"
                 " and press enter)" << endl;
 
         cin >> input;
 
-        while (tempCheck(input) != 1)
+        while (tempCheck(input) != 1 || upperCheck(lower, input) != 1)
         {
-            cout << "Please try again:" << endl;
+            cout << endl << "Please try again:" << endl;
             cin.clear();
             cin >> input;
         }
@@ -784,7 +844,7 @@ public:
         map <string, float> avgMap;
         map <string, float>::iterator it;
 
-        std::chrono::duration<double> elapsed, elapsed2;
+        chrono::duration<double> elapsed, elapsed2;
 
         if(timer==0)
             avgMap = yearlyAvg(lower, upper, unit);
@@ -804,7 +864,7 @@ public:
 
         if(avgMap.empty())
         {
-            cout << "There are no cities with a yearly, average temperature" <<
+            cout << endl << "There are no cities with a yearly, average temperature" <<
                  " within the range you specified. Would " << endl << "you like to " <<
                  "readjust the range? (press y and enter to try again or press n and enter to continue)" << endl;
 
@@ -812,7 +872,7 @@ public:
 
             while (input != "y" && input != "n")
             {
-                cout << "Please type y or n and press enter" << endl;
+                cout << endl << "Please type y or n and press enter" << endl;
                 cin >> input;
             }
 
@@ -825,8 +885,6 @@ public:
 
             for (it = avgMap.begin(); it != avgMap.end(); it++)
                 cout << it->first << " " << finalTemp(it->second, unit) << " " << unit << endl;
-
-            cout << endl;
 
             if (timer == 1)
                 winner(elapsed, elapsed2);
@@ -843,25 +901,27 @@ public:
 
         cout << endl << "Type y to display data structure comparison or n to turn it off" << endl;
 
-        cin >> input2;
-
-        while(input2 != "y" && input2 != "n")
-        {
-            cout << "Please type y or n and press enter" << endl;
             cin >> input2;
-        }
 
-        if(input2 == "y")
-        {
-            timer = 1;
-            cout << endl << "Data structure comparison will now be displayed" << endl << endl;
-        }
-        else
-        {
-            timer = 0;
-            cout << endl << "Data structure comparison will no longer be displayed" << endl << endl;
-        }
+            while(input2 != "y" && input2 != "n")
+            {
+                cout << "Please type y or n and press enter" << endl;
+                cin >> input2;
+            }
+
+            if(input2 == "y")
+            {
+                timer = 1;
+                cout << endl << "Data structure comparison will now be displayed"  << endl;
+            }
+            else
+            {
+                timer = 0;
+                cout << endl << "Data structure comparison will no longer be displayed" << endl << endl;
+            }
     }
+
+//  #################################  MENU FUNCTIONS ##############################
 
 //Function to display the main menu. Different number choices will call different function acccordingly except for
 //the number 5 which will lead to the program ending
@@ -903,6 +963,7 @@ public:
 
         return input;
     }
+
 //##########################   HELPER FUNCTIONS  ####################################
 
 //Helper function that prints every city along with every unique date and temperature for that date that was found in the
@@ -910,11 +971,8 @@ public:
     void printCityData()
     {
         for(outer = city1.begin(); outer!= city1.end(); outer++)
-        {
-            inner = outer->second.begin();
             for(inner = outer->second.begin(); inner!= outer->second.end(); inner++)
                 cout  << outer->first << " " <<  inner->first << " " << inner->second << endl;
-        }
     }
 
 //Helper function to display the calendar
@@ -955,12 +1013,13 @@ public:
 //Main
 int main() {
 
-    Weather w;
+    Temperature t;
 
-    vector <string> preInput = w.fileExtraction();
-    w.mapMaker(preInput);
-    w.calendarMaker();
-    w.nodeMaker();
+    //Following 4 needed to set up the appropriate data structures from the CSV file
+    vector <string> preInput = t.fileExtraction();
+    t.mapMaker(preInput);
+    t.calendarMaker();
+    t.nodeMaker();
 
     string input;
 
@@ -971,21 +1030,21 @@ int main() {
     {
         cin.ignore();
 
-        input = w.mainMenu();
+        input = t.mainMenu();
 
         if (input == "1")
-            w.option1();
+            t.option1();
 
         if (input == "2")
-            w.option2();
+            t.option2();
 
         if (input == "3")
-            w.option3();
+            t.option3();
 
         if (input == "4")
-            w.option4();
+            t.option4();
 
-        if (input == "5" || w.mainMenuReturn() == "n")
+        if (input == "5" || t.mainMenuReturn() == "n")
             break;
     }
 
