@@ -1,1 +1,1 @@
-The source code is localized within the main function. Go into main and run it and go from there. Please note it will take a few minutes for the program to load. Using the program itself will be self explanatory with the menu optopns. 
+The source code is all localized within main.cpp and is all that needs to be run. Please note it will take a few minutes for the program to load. Afterwards, the program itself will run seamlessly. Using the program will be self explanatory with the menu optopns presented.
