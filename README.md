@@ -1,4 +1,4 @@
-Run main.cpp. It will take a few minutes to load after which the program will run seamlessley. The following are what is actually used in the final version:
+Run main.cpp. It will take a few minutes to load after which the program will run seamlessley. Using the program should be self explanatory with the directions provided in the program. The following files are what is actually used in the final version:
 
 1. main.cpp
 2. TemperatureClass.h
