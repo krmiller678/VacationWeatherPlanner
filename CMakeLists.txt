@@ -11,6 +11,5 @@ add_executable(VacationWeatherPlanner
     City.cpp
     City.h
     main.cpp
-    stuff.h
     WeatherDataNode.cpp
     WeatherDataNode.h)
