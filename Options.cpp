@@ -229,6 +229,9 @@ void Temperature::option2()
     }
     else
     {
+          cout << endl << "The following cities with the following date ranges will be within" <<
+        " your acceptable temperature range" << endl;
+        
         for (rangeOuter = rangesMap.begin(); rangeOuter != rangesMap.end(); rangeOuter++) {
             cout << rangeOuter->first << ": ";
             for (rangeInner = rangeOuter->second.begin(); rangeInner != rangeOuter->second.end(); rangeInner++)
