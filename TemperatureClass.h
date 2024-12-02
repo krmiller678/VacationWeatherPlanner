@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <vector>
 using namespace std;
 
 class Temperature
