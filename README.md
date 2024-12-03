@@ -26,6 +26,7 @@ OPTION 2
 2. Configure and Build the Project: Visual Studio will prompt you to configure the project. Follow the prompts.
 3. Run main.cpp.
 
+# Additional
 _**The program will take a few minutes to load the data after which it will run seamlessley. Running it entirely 
 in the terminal however can result in better performance. 
 The program is designed to be intuitive and self-explanatory with directions provided within the program interface.
