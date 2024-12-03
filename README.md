@@ -1,5 +1,5 @@
 # Option 1: Clone Repository
-1. Go into terminal and type cd desktop
+1. Go into terminal and cd to your desired location
 2. Then type git clone https://github.com/krmiller678/VacationWeatherPlanner
 3. Open the newly created project in Your Preferred IDE:
    CLion: Open the project folder.
@@ -8,7 +8,6 @@
    If using CLion: CLion will auto-detect the CMakeLists.txtand configure the project.
    If using Visual Studio: Visual Studio will prompt you to configure the project. Follow the prompts.
 5. In your IDE, build the solution and then run the main.cpp.
-
 
 # Option 2: Download Zip File
 1. Use the green "< > Code button" at the top right of the repo and download the repo as a zip
