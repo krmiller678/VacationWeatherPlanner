@@ -1,4 +1,4 @@
-There are 2 methods to obtain the project:
+# Obtaining the project
 
 # Option 1: Clone Repository
 1. Go into terminal and type cd desireddirectory
@@ -9,6 +9,8 @@ There are 2 methods to obtain the project:
 2. Extract the ZIP file to a desired location
 
 Once the project is saved, there are different methods to actually opening it:
+
+# Running the project
 
 # Clion
 OPTION 1
