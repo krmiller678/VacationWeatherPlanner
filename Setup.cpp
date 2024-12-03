@@ -55,49 +55,31 @@ vector <string> Temperature::fileExtraction()
 //Initializes the city1 ordered map where the key is a distinct city found from the csv file and the value is
 //another ordered map where the key is a distinct historical date and it's value is the temperature on that day.
 //Most of the function is devoted to getting the full date in the proper format from the csv
-void Temperature::mapMaker(vector <string> input)
-{
+void Temperature::mapMaker(vector<string> input) {
     string word;
-    string city,month,date,year, fulldate, temp;
-    vector <string> words;
+    string city, month, date, year, fulldate, temp;
+    vector<string> words;
 
-    for(int i=0; i < input.size(); i++)
-    {
-        for(int j = 0; j < input.at(i).length(); j++)
-        {
-            if(input.at(i)[j]==',')
-            {
-                words.push_back(word);
-                word.clear();
-                continue;
-            }
-            word+=input.at(i)[j];
+    for (int i = 0; i < input.size(); i++) {
+        istringstream iss(input[i]);
+        getline(iss, city, ',');
+        getline(iss, month, ',');
+        getline(iss, date, ',');
+        getline(iss, year, ',');
+        getline(iss, temp, ',');
+
+        if (month.size() == 1) month = "0" + month;
+        if (date.size() == 1) date = "0" + date;
+
+        if (year.length() == 4 && city != "Muscat") {
+            // Some rows in CSV had 3 digits for year. Muscat had negligible temperature data
+            fulldate = year + "-" + month + "-" + date;
+
+            // Direct conversion
+            float temperature = stof(temp);
+            city1[city][fulldate] = temperature;
+
         }
-        word.erase(word.size() - 1);
-        words.push_back(word);
-        word.clear();
-        city = words.at(0);
-
-        if(words.at(1).size()==1)
-            month = "0" + words.at(1);
-        else month = words.at(1);
-
-        if(words.at(2).size()==1)
-            date= "0" + words.at(2);
-        else date = words.at(2);
-
-        year= words.at(3);
-        temp= words.at(4);
-        words.clear();
-
-        if(year.length()==4 && city != "Muscat")
-            //some rows in CSV had 3 digits for year. Muscat had negligible temperature data
-        {
-            fulldate += year + "-" + month + "-" + date;
-            city1[city][fulldate] = stof(temp);
-        }
-
-        fulldate.clear();
     }
 }
 
