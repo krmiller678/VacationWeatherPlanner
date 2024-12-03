@@ -26,13 +26,17 @@ OPTION 2
 2. Configure and Build the Project: Visual Studio will prompt you to configure the project. Follow the prompts.
 3. Run main.cpp.
 
+# Terminal (mac)
+1. cd into the project folder created earlier
+2. type make and press enter
+3. type ./VacationWeatherPlanner and press enter
+4. Wait for program to load
+
 # Additional
 _**The program will take a few minutes to load the data after which it will run seamlessley. Running it entirely 
 in the terminal however can result in better performance. 
 The program is designed to be intuitive and self-explanatory with directions provided within the program interface.
 Note that city_temperature was origininally 1 csv file but was split into 2 due to GitHub size upload limitations._** 
 
-WARNING: don't run the program entirely in the terminal. The current version of main is referencing an older version
-of the program and only has 2 countries. 
 
 
