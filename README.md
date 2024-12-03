@@ -14,8 +14,9 @@
 1. Use the green "< > Code button" at the top right of the repo and download the repo as a zip
 2. Extract the ZIP file to a desired location
 3. Open the unzipped folder
-4. You should be able to open main.cpp directly in the folder then run it within the IDE once it loads
-5. Note - if you experience any issues with the cmake version, your IDE may prompt you to click fix which is ok to update
+4. You should be able to open main.cpp directly in the folder
+5. Wait for everything to load before running main.cpp
+6. Note - if you experience any issues with the cmake version, your IDE may prompt you to click fix which is ok to update
 
 _**The program will take a few minutes to load the data after which it will run seamlessley.
 The program is designed to be intuitive and self-explanatory with directions provided within the program interface.
