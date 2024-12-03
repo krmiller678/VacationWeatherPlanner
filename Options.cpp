@@ -38,7 +38,7 @@ void Temperature::option1()
 
     while (cityCheck(input) != 1)
     {
-        cout << "Please try again:" << endl;
+        cout << endl << "Please try again:" << endl;
         cin >> input;
     }
 
@@ -48,7 +48,7 @@ void Temperature::option1()
     cin >> input;
     while (dateCheck(input) != 1)
     {
-        cout << "Please try again:" << endl;
+        cout << endl << "Please try again:" << endl;
         cin >> input;
     }
 
@@ -59,7 +59,7 @@ void Temperature::option1()
     cin >> input;
 
     while (dateCheck(input) != 1) {
-        cout << "Please try again:" << endl;
+        cout << endl << "Please try again:" << endl;
         cin.clear();
         cin >> input;
     }
@@ -71,7 +71,7 @@ void Temperature::option1()
     cin >> input;
 
     while (unitcheck(input) != 1) {
-        cout << "Please try again:" << endl;
+        cout << endl << "Please try again:" << endl;
         cin.clear();
         cin >> input;
     }
