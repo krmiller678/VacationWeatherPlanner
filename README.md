@@ -1,7 +1,7 @@
 There are 2 methods to obtain the project:
 
 # Option 1: Clone Repository
-1. Go into terminal and cd to your desired location
+1. Go into terminal and type cd desireddirectory
 2. Then type git clone https://github.com/krmiller678/VacationWeatherPlanner
 
 # Option 2: Download Zip File
@@ -28,9 +28,9 @@ OPTION 2
 
 # Terminal (mac)
 1. cd into the project folder created earlier
-2. type cmake . and press enter
-3. type make and press enter
-4. type ./VacationWeatherPlanner and press enter
+2. type     cmake .    and press enter
+3. type     make       and press enter
+4. type     ./VacationWeatherPlanner       and press enter
 5. Wait for program to load then it can be used
 
 # Additional
