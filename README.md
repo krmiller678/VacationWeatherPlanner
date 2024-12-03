@@ -1,5 +1,5 @@
 # Option 1: Clone Repository
-1. git clone https://github.com/yourusername/VacationWeatherPlanner.git
+1. git clone https://github.com/krmiller678/VacationWeatherPlanner
 2. cd VacationWeatherPlanner
 3. Open the Project in Your Preferred IDE:
    CLion: Open the project folder.
