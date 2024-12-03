@@ -28,9 +28,10 @@ OPTION 2
 
 # Terminal (mac)
 1. cd into the project folder created earlier
-2. type make and press enter
-3. type ./VacationWeatherPlanner and press enter
-4. Wait for program to load
+2. type cmake . and press enter
+3. type make and press enter
+4. type ./VacationWeatherPlanner and press enter
+5. Wait for program to load then it can be used
 
 # Additional
 _**The program will take a few minutes to load the data after which it will run seamlessley. Running it entirely 
