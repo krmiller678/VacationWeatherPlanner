@@ -32,4 +32,7 @@ in the terminal however can result in better performance.
 The program is designed to be intuitive and self-explanatory with directions provided within the program interface.
 Note that city_temperature was origininally 1 csv file but was split into 2 due to GitHub size upload limitations._** 
 
+WARNING: don't run the program entirely in the terminal. The current version of main is referencing an older version
+of the program and only has 2 countries. 
+
 
