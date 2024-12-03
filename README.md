@@ -10,13 +10,14 @@ There are 2 methods to obtain the project:
 
 Once the project is saved, there are different methods to actually opening it:
 
-# Clion: Option 1
+# Clion
+OPTION 1
 1. Go into the project folder and open main.cpp.
 2. Press OK for any pop ups (project wizard, configuration)
 3. Allow everything to run first like symbools, indexing, etc...
 4. Note - if you experience any issues with the cmake version, your IDE may prompt you to click fix which is ok to update
 
-# Clion: Option 2
+OPTION 2
 1. Open the project folder
 2. CLion will auto-detect the CMakeLists.txtand configure the project.
 
