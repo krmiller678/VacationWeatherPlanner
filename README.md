@@ -9,13 +9,6 @@
    If using Visual Studio: Visual Studio will prompt you to configure the project. Follow the prompts.
 5. In your IDE, build the solution and then run the main.cpp.
 
-Option for Macbook (in termminal)
-cmake .
-.main
-
-Option for windows
-make
-main.exe 
 
 # Option 2: Download Zip File
 1. Use the green "< > Code button" at the top right of the repo and download the repo as a zip
@@ -23,7 +16,6 @@ main.exe
 3. Open the unzipped folder
 4. You should be able to open main.cpp directly in the folder then run it within the IDE once it loads
 5. Note - if you experience any issues with the cmake version, your IDE may prompt you to click fix which is ok to update
-
 
 _**The program will take a few minutes to load the data after which it will run seamlessley.
 The program is designed to be intuitive and self-explanatory with directions provided within the program interface.
