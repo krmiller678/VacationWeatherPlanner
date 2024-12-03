@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.28.6)
 project(VacationWeatherPlanner)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -6,10 +6,5 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(.)
 
 add_executable(VacationWeatherPlanner
-    CitiesOfInterest.cpp
-    CitiesOfInterest.h
-    City.cpp
-    City.h
     main.cpp
-    WeatherDataNode.cpp
-    WeatherDataNode.h)
+    )
