@@ -60,7 +60,7 @@ void Temperature::mapMaker(vector<string> input) {
     string city, month, date, year, fulldate, temp;
     vector<string> words;
 
-    for (int i = 0; i < input.size(); i++) {
+    for (int i = 1; i < input.size(); i++) {
         istringstream iss(input[i]);
         getline(iss, city, ',');
         getline(iss, month, ',');
