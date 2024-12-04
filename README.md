@@ -8,8 +8,6 @@ Option 2: Download Zip File
 1. Use the green "< > Code button" at the top right of the repo and download the repo as a zip
 2. Extract the ZIP file to a desired location
 
-Once the project is saved, there are different methods to actually opening it:
-
 # 2. Running the project
 
 # Clion
