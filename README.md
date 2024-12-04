@@ -1,4 +1,4 @@
-# Obtaining the project
+# 1. Obtaining the project
 
 # Option 1: Clone Repository
 1. Go into terminal and type cd desireddirectory
@@ -10,7 +10,7 @@
 
 Once the project is saved, there are different methods to actually opening it:
 
-# Running the project
+# 2. Running the project
 
 # Clion
 OPTION 1
@@ -35,7 +35,7 @@ OPTION 2
 4. type     ./VacationWeatherPlanner       and press enter
 5. Wait for program to load then it can be used
 
-# Additional
+# 3. Additional
 _**The program will take a few minutes to load the data after which it will run seamlessley. Running it entirely 
 in the terminal however can result in better performance. 
 The program is designed to be intuitive and self-explanatory with directions provided within the program interface.
