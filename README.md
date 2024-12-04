@@ -1,10 +1,10 @@
 # 1. Obtaining the project
 
-# Option 1: Clone Repository
+Option 1: Clone Repository
 1. Go into terminal and type cd desireddirectory
 2. Then type git clone https://github.com/krmiller678/VacationWeatherPlanner
 
-# Option 2: Download Zip File
+Option 2: Download Zip File
 1. Use the green "< > Code button" at the top right of the repo and download the repo as a zip
 2. Extract the ZIP file to a desired location
 
